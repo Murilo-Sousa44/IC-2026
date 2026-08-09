@@ -51,7 +51,18 @@ instituicoes = carregar_instituicoes()
 convenio_ano = carregar_convenio_tipo_ano()
 
 st.title("Educação Infantil em Viçosa/MG (2007–2024)")
-st.caption("Painel de exploração dos microdados do Censo Escolar, já reconciliados por CO_ENTIDADE.")
+st.caption("Painel de exploração dos microdados do Censo Escolar")
+
+st.subheader("Consulta por ano")
+ano_digitado = st.number_input("Digite o ano que deseja consultar:", min_value = int(matriculas["ano"].min()),max_value = int(matriculas["ano"].max()),value=int(matriculas["ano"].max()), step=1)
+dados_ano_digitado = matriculas[matriculas["ano"] == ano_digitado]
+
+c1, c2, c3, c4 = st.columns(4)
+c1.metric(f"instituicoes em {ano_digitado}", dados_ano_digitado["co_entidade"].nunique())
+c2.metric(f"Matrículas totais em {ano_digitado}", int(dados_ano_digitado["total_ei"].sum()))
+c3.metric(f"Matrículas creche em {ano_digitado}", int(dados_ano_digitado["matriculas_creche"].sum()))
+c4.metric(f"Matrículas pré-escola em {ano_digitado}", int(dados_ano_digitado["matriculas_pre"].sum()))
+st.divider()
 
 # FILTROS
 st.sidebar.header("Filtros")
@@ -91,17 +102,8 @@ if dados_filtrados.empty:
     st.warning("Nenhum dado encontrado para essa combinação de filtros. Ajuste os filtros na barra lateral.")
     st.stop()
 
-ultimo_ano_filtro = dados_filtrados["ano"].max()
+ultimo_ano_filtro = ano_digitado
 dados_ultimo_ano = dados_filtrados[dados_filtrados["ano"] == ultimo_ano_filtro]
-
-# METRICAS
-col1, col2, col3, col4 = st.columns(4)
-col1.metric(f"Instituições ativas em {ultimo_ano_filtro}", dados_ultimo_ano["co_entidade"].nunique())
-col2.metric(f"Matrículas totais em {ultimo_ano_filtro}", int(dados_ultimo_ano["total_ei"].sum()))
-col3.metric(f"Matrículas creche em {ultimo_ano_filtro}", int(dados_ultimo_ano["matriculas_creche"].sum()))
-col4.metric(f"Matrículas pré-escola em {ultimo_ano_filtro}", int(dados_ultimo_ano["matriculas_pre"].sum()))
-
-st.divider()
 
 # EVOLUCAO TEMPORAL
 st.subheader("Evolução das matrículas no período filtrado")
@@ -130,19 +132,19 @@ st.divider()
 col_esq, col_dir = st.columns(2)
 
 with col_esq:
-    st.subheader(f"Instituições por dependência administrativa em {ultimo_ano_filtro}")
+    st.subheader(f"Instituições por dependência administrativa em {ano_digitado}")
     contagem_dep = dados_ultimo_ano.groupby("dependencia")["co_entidade"].nunique().reset_index()
     contagem_dep.columns = ["Dependência", "Quantidade"]
-    fig_dep = px.bar(contagem_dep, x="Dependência", y="Quantidade", text="Quantidade", title=f"Instituições por dependência — {ultimo_ano_filtro}")
+    fig_dep = px.bar(contagem_dep, x="Dependência", y="Quantidade", text="Quantidade", title=f"Instituições por dependência — {ano_digitado}")
     fig_dep = adicionar_fonte(fig_dep)
     st.plotly_chart(fig_dep, use_container_width=True)
 
 with col_dir:
-    st.subheader(f"Instituições privadas por categoria em {ultimo_ano_filtro}")
+    st.subheader(f"Instituições privadas por categoria em {ano_digitado}")
     privadas_ano = dados_ultimo_ano[dados_ultimo_ano["dependencia"] == "Privada"]
     contagem_cat = privadas_ano.groupby("categoria_privada")["co_entidade"].nunique().reset_index()
     contagem_cat.columns = ["Categoria", "Quantidade"]
-    fig_cat = px.bar(contagem_cat, x="Categoria", y="Quantidade", text="Quantidade", title=f"Categoria de escola privada — {ultimo_ano_filtro}")
+    fig_cat = px.bar(contagem_cat, x="Categoria", y="Quantidade", text="Quantidade", title=f"Categoria de escola privada — {ano_digitado}")
     fig_cat = adicionar_fonte(fig_cat)
     st.plotly_chart(fig_cat, use_container_width=True)
 
