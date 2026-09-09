@@ -154,7 +154,7 @@ st.divider()
 st.subheader("Instituições por tipo de convênio com o poder público")
 convenio_filtrado = convenio_ano[convenio_ano["ano"].between(ano_inicio, ano_fim)]
 fig_convenio = px.line(convenio_filtrado, x="ano", y="n_instituicoes", color="tipo_convenio", markers=True,
-                        title="Número de instituições por tipo de convênio e ano")
+title="Número de instituições por tipo de convênio e ano")
 fig_convenio.update_layout(xaxis_title="Ano", yaxis_title="Nº de instituições", legend_title="Tipo de convênio")
 fig_convenio = adicionar_fonte(fig_convenio)
 st.plotly_chart(fig_convenio, use_container_width=True)
