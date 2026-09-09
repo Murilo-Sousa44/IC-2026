@@ -1,7 +1,12 @@
 import sqlite3
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+
+#variáveis globais
+LAT_VICOSA = -20.7547
+LONG_VICOSA = -42.8756
 
 st.set_page_config(page_title="Educação Infantil em Viçosa-MG", layout="wide")
 
@@ -192,5 +197,14 @@ if not instituicoes_exibir.empty and termo_busca:
     fig_traj.update_layout(xaxis_title="Ano", yaxis_title="Matrículas")
     fig_traj = adicionar_fonte(fig_traj)
     st.plotly_chart(fig_traj, use_container_width=True)
+
+#teste - mapa interativo com dados sobre as instituições de Viçosa-MG
+
+st.subheader("Teste - Mapa interativo com dados sobre a localização das instituições de Viçosa-MG")
+mapa = pd.DataFrame(
+    np.random.randn(60, 2) / [50, 50] + [LAT_VICOSA, LONG_VICOSA],
+    columns=['lat', 'lon']
+)
+st.map(mapa)
 
 st.caption(FONTE)
