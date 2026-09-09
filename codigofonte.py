@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-st.set_page_config(page_title="Educação Infantil - Viçosa/MG", layout="wide")
+st.set_page_config(page_title="Educação Infantil em Viçosa-MG", layout="wide")
 
 DB_PATH = "vicosa_educacao_infantil.db"
 FONTE = ("Fonte: Murilo Sousa Ferreira com base no INEP/MEC — Censo Escolar da Educação "
@@ -50,8 +50,9 @@ matriculas = carregar_matriculas_ano()
 instituicoes = carregar_instituicoes()
 convenio_ano = carregar_convenio_tipo_ano()
 
-st.title("Educação Infantil em Viçosa/MG (2007–2024)")
-st.caption("Painel de exploração dos microdados do Censo Escolar")
+st.title("Educação Infantil em Viçosa-MG (2007–2024)")
+st.caption("Painel de exploração dos microdados do Censo Escolar, dados disponíveis em https://www.gov.br/inep/pt-br/acesso-a-informacao/"
+"dados-abertos/microdados/censo-escolar.")
 
 st.subheader("Consulta por ano")
 ano_digitado = st.number_input("Digite o ano que deseja consultar:", min_value = int(matriculas["ano"].min()),max_value = int(matriculas["ano"].max()),value=int(matriculas["ano"].max()), step=1)
@@ -132,19 +133,19 @@ st.divider()
 col_esq, col_dir = st.columns(2)
 
 with col_esq:
-    st.subheader(f"Instituições por dependência administrativa em {ano_digitado}")
+    st.subheader(f"Instituições por dependência administrativa em {ultimo_ano_filtro}")
     contagem_dep = dados_ultimo_ano.groupby("dependencia")["co_entidade"].nunique().reset_index()
-    contagem_dep.columns = ["Dependência", "Quantidade"]
-    fig_dep = px.bar(contagem_dep, x="Dependência", y="Quantidade", text="Quantidade", title=f"Instituições por dependência — {ano_digitado}")
+    contagem_dep.columns = ["Dependência", "Quant de Escolas"]
+    fig_dep = px.bar(contagem_dep, x="Dependência", y="Quant de Escolas", text="Quant de Escolas", title=f"Contagem de instituições por dependência administrativa em Viçosa-MG — {ultimo_ano_filtro}")
     fig_dep = adicionar_fonte(fig_dep)
     st.plotly_chart(fig_dep, use_container_width=True)
 
 with col_dir:
-    st.subheader(f"Instituições privadas por categoria em {ano_digitado}")
+    st.subheader(f"Instituições privadas por categoria em {ultimo_ano_filtro}")
     privadas_ano = dados_ultimo_ano[dados_ultimo_ano["dependencia"] == "Privada"]
     contagem_cat = privadas_ano.groupby("categoria_privada")["co_entidade"].nunique().reset_index()
-    contagem_cat.columns = ["Categoria", "Quantidade"]
-    fig_cat = px.bar(contagem_cat, x="Categoria", y="Quantidade", text="Quantidade", title=f"Categoria de escola privada — {ano_digitado}")
+    contagem_cat.columns = ["Categoria", "Quant de Escolas"]
+    fig_cat = px.bar(contagem_cat, x="Categoria", y="Quant de Escolas", text="Quant de Escolas", title=f"Contagem de instituições por categoria de escola privada em Viçosa-MG — {ultimo_ano_filtro}")
     fig_cat = adicionar_fonte(fig_cat)
     st.plotly_chart(fig_cat, use_container_width=True)
 
@@ -155,10 +156,10 @@ st.subheader("Instituições por tipo de convênio com o poder público")
 convenio_filtrado = convenio_ano[convenio_ano["ano"].between(ano_inicio, ano_fim)]
 fig_convenio = px.line(convenio_filtrado, x="ano", y="n_instituicoes", color="tipo_convenio", markers=True,
 title="Número de instituições por tipo de convênio e ano")
+fig_convenio = px.line(convenio_filtrado, x="ano", y="n_instituicoes", color="tipo_convenio", markers=True,title="Número de instituições por tipo de convênio e ano")
 fig_convenio.update_layout(xaxis_title="Ano", yaxis_title="Nº de instituições", legend_title="Tipo de convênio")
 fig_convenio = adicionar_fonte(fig_convenio)
 st.plotly_chart(fig_convenio, use_container_width=True)
-
 st.divider()
 
 
@@ -168,9 +169,7 @@ termo_busca = st.text_input("Digite parte do nome da instituição:")
 
 instituicoes_exibir = instituicoes.copy()
 if termo_busca:
-    instituicoes_exibir = instituicoes_exibir[
-        instituicoes_exibir["nome"].str.contains(termo_busca, case=False, na=False)
-    ]
+    instituicoes_exibir = instituicoes_exibir[instituicoes_exibir["nome"].str.contains(termo_busca, case=False, na=False)]
 
 colunas_exibir = [
     "nome", "dependencia", "categoria_privada", "convenio", "localizacao",
