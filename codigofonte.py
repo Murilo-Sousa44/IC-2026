@@ -104,7 +104,7 @@ if dados_filtrados.empty:
     st.stop()
 
 ultimo_ano_filtro = ano_digitado
-dados_ultimo_ano = dados_filtrados[dados_filtrados["ano"] == ultimo_ano_filtro]
+dados_ultimo_ano = dados_filtrados[dados_filtrados["ano"] == ano_fim]
 
 # EVOLUCAO TEMPORAL
 st.subheader("Evolução das matrículas no período filtrado")
@@ -133,19 +133,19 @@ st.divider()
 col_esq, col_dir = st.columns(2)
 
 with col_esq:
-    st.subheader(f"Instituições por dependência administrativa em {ultimo_ano_filtro}")
+    st.subheader(f"Instituições por dependência administrativa em {ano_fim}")
     contagem_dep = dados_ultimo_ano.groupby("dependencia")["co_entidade"].nunique().reset_index()
     contagem_dep.columns = ["Dependência", "Quant de Escolas"]
-    fig_dep = px.bar(contagem_dep, x="Dependência", y="Quant de Escolas", text="Quant de Escolas", title=f"Contagem de instituições por dependência administrativa em Viçosa-MG — {ultimo_ano_filtro}")
+    fig_dep = px.bar(contagem_dep, x="Dependência", y="Quant de Escolas", text="Quant de Escolas", title=f"Contagem de instituições por dependência administrativa em Viçosa-MG — {ano_fim}")
     fig_dep = adicionar_fonte(fig_dep)
     st.plotly_chart(fig_dep, use_container_width=True)
 
 with col_dir:
-    st.subheader(f"Instituições privadas por categoria em {ultimo_ano_filtro}")
+    st.subheader(f"Instituições privadas por categoria em {ano_fim}")
     privadas_ano = dados_ultimo_ano[dados_ultimo_ano["dependencia"] == "Privada"]
     contagem_cat = privadas_ano.groupby("categoria_privada")["co_entidade"].nunique().reset_index()
     contagem_cat.columns = ["Categoria", "Quant de Escolas"]
-    fig_cat = px.bar(contagem_cat, x="Categoria", y="Quant de Escolas", text="Quant de Escolas", title=f"Contagem de instituições por categoria de escola privada em Viçosa-MG — {ultimo_ano_filtro}")
+    fig_cat = px.bar(contagem_cat, x="Categoria", y="Quant de Escolas", text="Quant de Escolas", title=f"Contagem de instituições por categoria de escola privada em Viçosa-MG — {ano_fim}")
     fig_cat = adicionar_fonte(fig_cat)
     st.plotly_chart(fig_cat, use_container_width=True)
 
