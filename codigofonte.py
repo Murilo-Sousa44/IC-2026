@@ -11,7 +11,7 @@ LONG_VICOSA = -42.8756
 
 st.set_page_config(page_title="Educação Infantil em Viçosa-MG", layout="wide")
 
-DB_PATH = "vicosa_educacao_infantil_com_coordenadas.db"
+DB_PATH = "vicosa_educacao_infantil.db"
 FONTE = ("Fonte: Murilo Sousa Ferreira com base no INEP/MEC — Censo Escolar da Educação "
          "Básica (2007–2024). Disponível em https://www.gov.br/inep/pt-br/acesso-a-informacao/"
          "dados-abertos/microdados/censo-escolar.")
