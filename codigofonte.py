@@ -17,7 +17,6 @@ FONTE = ("Fonte: Murilo Sousa Ferreira com base no INEP/MEC — Censo Escolar da
          "dados-abertos/microdados/censo-escolar.")
 
 
-@st.cache_resource
 def conectar():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
