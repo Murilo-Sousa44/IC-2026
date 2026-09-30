@@ -16,28 +16,20 @@ FONTE = ("Fonte: Murilo Sousa Ferreira com base no INEP/MEC — Censo Escolar da
          "Básica (2007–2024). Disponível em https://www.gov.br/inep/pt-br/acesso-a-informacao/"
          "dados-abertos/microdados/censo-escolar.")
 
-
 def conectar():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
-
-@st.cache_data
 def carregar_matriculas_ano():
     conn = conectar()
     return pd.read_sql("SELECT * FROM matriculas_ano", conn)
 
-
-@st.cache_data
 def carregar_instituicoes():
     conn = conectar()
     return pd.read_sql("SELECT * FROM instituicoes", conn)
 
-
-@st.cache_data
 def carregar_convenio_tipo_ano():
     conn = conectar()
     return pd.read_sql("SELECT * FROM convenio_tipo_ano", conn)
-
 
 def adicionar_fonte(fig):
     fig.update_layout(
