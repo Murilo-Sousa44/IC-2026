@@ -245,6 +245,4 @@ st.pydeck_chart(
     use_container_width=True
 )
 
-st.write("Colunas da tabela instituicoes:", instituicoes.columns.tolist())
-
 st.caption(FONTE)
