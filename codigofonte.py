@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+import pydeck as pdk
 
 #variáveis globais
 LAT_VICOSA = -20.7547
@@ -10,7 +11,7 @@ LONG_VICOSA = -42.8756
 
 st.set_page_config(page_title="Educação Infantil em Viçosa-MG", layout="wide")
 
-DB_PATH = "vicosa_educacao_infantil.db"
+DB_PATH = "vicosa_educacao_infantil_com_coordenadas.db"
 FONTE = ("Fonte: Murilo Sousa Ferreira com base no INEP/MEC — Censo Escolar da Educação "
          "Básica (2007–2024). Disponível em https://www.gov.br/inep/pt-br/acesso-a-informacao/"
          "dados-abertos/microdados/censo-escolar.")
@@ -200,11 +201,48 @@ if not instituicoes_exibir.empty and termo_busca:
 
 #teste - mapa interativo com dados sobre as instituições de Viçosa-MG
 
-st.subheader("Teste - Mapa interativo com dados sobre a localização das instituições de Viçosa-MG")
-mapa = pd.DataFrame(
-    np.random.randn(60, 2) / [50, 50] + [LAT_VICOSA, LONG_VICOSA],
-    columns=['lat', 'lon']
+st.subheader("Teste - Mapa interativo com dados sobre as instituições de Viçosa-MG")
+
+dados_mapa = instituicoes.dropna(
+    subset=["latitude", "longitude"]
+).copy()
+
+camada = pdk.Layer(
+    "ScatterplotLayer",
+    data=dados_mapa,
+    get_position="[longitude, latitude]",
+    get_radius=40,
+    get_fill_color=[0, 120, 255],
+    pickable=True,
+    auto_highlight=True
 )
-st.map(mapa)
+
+mapa = pdk.Deck(
+    map_style=None,
+    initial_view_state=pdk.ViewState(
+        latitude=LAT_VICOSA,
+        longitude=LONG_VICOSA,
+        zoom=13,
+        pitch=0
+    ),
+    layers=[camada],
+    tooltip={
+        "text": (
+            "{nome}\n"
+            "Dependência: {dependencia}\n"
+            "Categoria: {categoria_privada}\n"
+            "Convênio: {convenio}\n"
+            "Localização: {localizacao}\n"
+            "Matrículas totais: {total_ei}\n"
+            "Creche: {matriculas_creche_total}\n"
+            "Pré-escola: {matriculas_pre_total}"
+        )
+    }
+)
+
+st.pydeck_chart(
+    mapa,
+    use_container_width=True
+)
 
 st.caption(FONTE)
