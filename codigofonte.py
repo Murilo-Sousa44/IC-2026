@@ -11,14 +11,16 @@ LONG_VICOSA = -42.8756
 
 st.set_page_config(page_title="Educação Infantil em Viçosa-MG", layout="wide")
 
+# banco de dados para o carregamento das instituições
+
 DB_PATH = "vicosa_educacao_infantil.db"
 FONTE = ("Fonte: Murilo Sousa Ferreira com base no INEP/MEC — Censo Escolar da Educação "
-         "Básica (2007–2024). Disponível em https://www.gov.br/inep/pt-br/acesso-a-informacao/"
-         "dados-abertos/microdados/censo-escolar.")
+         "Básica (2007–2024). Disponível em https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar.")
 
-def conectar():
+def conectar(): #conecta ao banco de dados DB_PATH
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
+#carrega os dados (com SQL é mais rápido). Tirei a cache pois tava tendo erro em alguma coisa que nao lembro mais o que é
 def carregar_matriculas_ano():
     conn = conectar()
     return pd.read_sql("SELECT * FROM matriculas_ano", conn)
@@ -42,10 +44,12 @@ def adicionar_fonte(fig):
     )
     return fig
 
-
+#salva os dados nas variaveis matriculas, instituicoes e convenio_ano
 matriculas = carregar_matriculas_ano()
 instituicoes = carregar_instituicoes()
 convenio_ano = carregar_convenio_tipo_ano()
+
+#------------------------------------- LAYOUT DA PAGINA -------------------------------------------------------
 
 st.title("Educação Infantil em Viçosa-MG (2007–2024)")
 st.caption("Painel de exploração dos microdados do Censo Escolar, dados disponíveis em https://www.gov.br/inep/pt-br/acesso-a-informacao/"
@@ -62,7 +66,7 @@ c3.metric(f"Matrículas creche em {ano_digitado}", int(dados_ano_digitado["matri
 c4.metric(f"Matrículas pré-escola em {ano_digitado}", int(dados_ano_digitado["matriculas_pre"].sum()))
 st.divider()
 
-# FILTROS
+#---------------------------------------FILTROS------------------------------------
 st.sidebar.header("Filtros")
 
 anos_disponiveis = sorted(matriculas["ano"].unique())
