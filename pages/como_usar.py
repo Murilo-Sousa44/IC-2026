@@ -22,11 +22,12 @@ st.subheader("Identificação")
 
 st.markdown("""
 - **co_entidade:** código de identificação da instituição no INEP.
+- **co_municipio:** código do município utilizado para visualização dos dados (Nesse caso, Viçosa/MG)
 - **nome:** nome da instituição.
 - **dependencia:** dependência administrativa (Municipal, Estadual, Federal ou Privada).
 - **categoria_privada:** categoria da instituição privada.
 - **convenio:** existência e tipo de convênio com o poder público.
-- **localizacao:** localização da instituição (Urbana ou Rural).
+- **localizacao:** localização da instituição (1.0 Para urbana e 2.0 para rural).
 """)
 
 st.header("Como utilizar o painel?")

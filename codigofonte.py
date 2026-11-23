@@ -49,6 +49,19 @@ matriculas = carregar_matriculas_ano()
 instituicoes = carregar_instituicoes()
 convenio_ano = carregar_convenio_tipo_ano()
 
+#funcao que converte a localizacao para Urbana/Rural, pois no banco de dados está salvo como 1.0 ou 2.0
+def difinir_string_para_localizacao():
+    conn = conectar()
+    instituicoes = pd.read_sql_query(
+        "SELECT * FROM instituicoes",
+        conn
+    )
+
+instituicoes["localizacao"] = instituicoes["localizacao"].map({
+    "1.0": "Urbana",
+    "2.0": "Rural"
+}).fillna("Nao informado")
+
 #------------------------------------- LAYOUT DA PAGINA -------------------------------------------------------
 
 st.title("Educação Infantil em Viçosa-MG (2007–2024)")
@@ -167,6 +180,7 @@ st.divider()
 # BUSCA DE INSTITUICOES
 st.subheader("Buscar instituição")
 termo_busca = st.text_input("Digite parte do nome da instituição:")
+st.markdown("Nota: Os dados das intituições exibidas nessa consulta são relativos ao ano de 2024 e mostram apenas as intituições com TP_FUNCIONAMENTO = 1.0 (instituições ativas segundo o MEC).")
 
 instituicoes_exibir = instituicoes.copy()
 if termo_busca:
@@ -177,6 +191,7 @@ colunas_exibir = [
     "tipo_oferta", "primeiro_ano", "ultimo_ano", "anos_ativos",
     "matriculas_creche_total", "matriculas_pre_total", "total_ei", "situacao_2024"
 ]
+
 st.dataframe(
     instituicoes_exibir[colunas_exibir].sort_values("total_ei", ascending=False),
     use_container_width=True,
@@ -197,6 +212,8 @@ if not instituicoes_exibir.empty and termo_busca:
 #teste - mapa interativo com dados sobre as instituições de Viçosa-MG
 
 st.subheader("Teste - Mapa interativo com dados sobre as instituições de Viçosa-MG")
+st.markdown("Passe o mouse sobre uma instituição para ver mais detalhes.")
+st.markdown("Nota: Os dados das intituições exibidas nesse mapa são relativos ao ano de 2024 e mostram apenas as intituições com TP_FUNCIONAMENTO = 1.0 (instituições ativas segundo o MEC).")
 
 dados_mapa = instituicoes.dropna(
     subset=["latitude", "longitude"]
